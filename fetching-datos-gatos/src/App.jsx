@@ -1,39 +1,19 @@
-import { useEffect, useState } from "react"
-const CAT_ENDPOINT_RANDOM_FACT = 'https://catfact.ninja/fact'
-const CAT_ENDPOINT_IMAGE_URL = 'https://api.thecatapi.com/v1/images/search'
-import './App.css'
+import '../style.css'
+import { useCatImage } from "./hooks/useCatImage"
+import { useCatFact } from './hooks/useCatFact'
 
 export function App() {
-    const [fact, setFact] = useState()
-    const [imageUrl, setImageUrl] = useState()
+    const { fact, refreshRandomFact } = useCatFact()
+    const { imageUrl } = useCatImage({ fact })
 
-    //efecto para recuperar la cita al cargar la pagina
-    useEffect(() => {
-        fetch(CAT_ENDPOINT_RANDOM_FACT)
-            .then(res => res.json())
-            .then(data => {
-                const { fact } = data
-                setFact(fact)
-            })
-    }, [])
-
-    //efecto para recuperar la imagen cada vez que tenemos una cita nueva
-    useEffect(() => {
-        if (!fact) return
-        const firsrWord = fact.split(' ')[0]
-        console.log(firsrWord)
-
-        fetch(CAT_ENDPOINT_IMAGE_URL)
-            .then(res => res.json())
-            .then(response => {
-                const { url } = response[0]
-                setImageUrl(url)
-            })
-    }, [fact])
+    const handleClick = () => {
+        refreshRandomFact()
+    }
 
     return (
         <main>
-            <h1>App de gatitos</h1>
+            <h1>Cat's App</h1>
+            <button onClick={handleClick}>Get new fact</button>
             <section>
                 {imageUrl && <img src={imageUrl}></img>}
                 {fact && <p>{fact}</p>}
